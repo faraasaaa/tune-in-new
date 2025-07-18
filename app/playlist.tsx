@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Alert, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import Colors from '../constants/Colors';
@@ -18,6 +18,7 @@ export default function PlaylistScreen() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [downloadedSongs, setDownloadedSongs] = useState<DownloadedSong[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
   const { playSong, setPlaylist, setPlaylistSource, currentSong, isPlaying, playlistSource } = useAudioPlayer();
 
@@ -44,6 +45,12 @@ export default function PlaylistScreen() {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
+
   const handleCreatePlaylist = async () => {
     if (!newPlaylistName.trim()) {
       Alert.alert('Error', 'Please enter a playlist name');
@@ -55,9 +62,22 @@ export default function PlaylistScreen() {
       setNewPlaylistName('');
       setShowCreateModal(false);
       loadData();
+      Toast.show({
+        type: "success",
+        text1: "Playlist Created",
+        text2: `"${newPlaylistName.trim()}" has been created`,
+        position: "top",
+        visibilityTime: 3000,
+      });
     } catch (error) {
       console.error('Error creating playlist:', error);
-      Alert.alert('Error', 'Failed to create playlist');
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to create playlist",
+        position: "top",
+        visibilityTime: 3000,
+      });
     }
   };
 
@@ -74,9 +94,22 @@ export default function PlaylistScreen() {
             try {
               await deletePlaylist(playlist.id);
               loadData();
+              Toast.show({
+                type: "success",
+                text1: "Playlist Deleted",
+                text2: `"${playlist.name}" has been deleted`,
+                position: "top",
+                visibilityTime: 3000,
+              });
             } catch (error) {
               console.error('Error deleting playlist:', error);
-              Alert.alert('Error', 'Failed to delete playlist');
+              Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "Failed to delete playlist",
+                position: "top",
+                visibilityTime: 3000,
+              });
             }
           },
         },
@@ -122,7 +155,7 @@ export default function PlaylistScreen() {
 
   const navigateToPlaylistDetail = (playlist: Playlist) => {
     router.push({
-      pathname: '/playlist-detail',
+      pathname: '/playlist-detail' as any,
       params: { playlistId: playlist.id }
     });
   };
@@ -134,7 +167,7 @@ export default function PlaylistScreen() {
       <TouchableOpacity 
         style={styles.playlistItem} 
         onPress={() => navigateToPlaylistDetail(item)}
-        activeOpacity={0.7}
+        activeOpacity={0.8}
       >
         <View style={styles.coverContainer}>
           {coverImage ? (
@@ -150,6 +183,7 @@ export default function PlaylistScreen() {
           <TouchableOpacity 
             style={styles.playButton}
             onPress={() => handlePlayPlaylist(item)}
+            activeOpacity={0.8}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Ionicons name="play-circle" size={36} color={Colors.dark.primary} />
@@ -171,6 +205,7 @@ export default function PlaylistScreen() {
         <TouchableOpacity 
           style={styles.deleteButton}
           onPress={() => handleDeletePlaylist(item)}
+          activeOpacity={0.7}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Ionicons name="trash-outline" size={20} color={Colors.dark.error} />
@@ -194,6 +229,7 @@ export default function PlaylistScreen() {
             <TouchableOpacity 
               style={styles.createButton}
               onPress={() => setShowCreateModal(true)}
+              activeOpacity={0.8}
             >
               <Ionicons name="add" size={24} color={Colors.dark.background} />
             </TouchableOpacity>
@@ -213,6 +249,14 @@ export default function PlaylistScreen() {
             renderItem={renderPlaylistItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={Colors.dark.primary}
+                colors={[Colors.dark.primary]}
+              />
+            }
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
           />
@@ -232,6 +276,7 @@ export default function PlaylistScreen() {
               <TouchableOpacity 
                 style={styles.createFirstButton}
                 onPress={() => setShowCreateModal(true)}
+                activeOpacity={0.8}
               >
                 <Ionicons name="add" size={20} color={Colors.dark.background} />
                 <Text style={styles.createFirstButtonText}>Create Playlist</Text>
@@ -249,7 +294,19 @@ export default function PlaylistScreen() {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Create New Playlist</Text>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Create New Playlist</Text>
+                <TouchableOpacity 
+                  style={styles.modalCloseButton}
+                  onPress={() => {
+                    setShowCreateModal(false);
+                    setNewPlaylistName('');
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="close" size={20} color={Colors.dark.textDim} />
+                </TouchableOpacity>
+              </View>
               <TextInput
                 style={styles.textInput}
                 placeholder="Enter playlist name"
@@ -268,14 +325,14 @@ export default function PlaylistScreen() {
                     setShowCreateModal(false);
                     setNewPlaylistName('');
                   }}
-                  activeOpacity={0.7}
+                  activeOpacity={0.8}
                 >
                   <Text style={styles.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={styles.createModalButton}
                   onPress={handleCreatePlaylist}
-                  activeOpacity={0.7}
+                  activeOpacity={0.8}
                 >
                   <Text style={styles.createModalButtonText}>Create</Text>
                 </TouchableOpacity>
@@ -483,7 +540,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: Colors.dark.card,
     borderRadius: 20,
-    padding: 24,
+    padding: 0,
     width: '100%',
     maxWidth: 320,
     elevation: 10,
@@ -491,37 +548,54 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.dark.border + '30',
+    backgroundColor: Colors.dark.background,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: Colors.dark.text,
-    marginBottom: 20,
-    textAlign: 'center',
+  },
+  modalCloseButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.dark.card,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textInput: {
     backgroundColor: Colors.dark.background,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 0,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
     fontSize: 16,
     color: Colors.dark.text,
-    borderWidth: 1,
-    borderColor: Colors.dark.border,
-    marginBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.dark.border + '30',
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
+    padding: 24,
+    gap: 16,
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: Colors.dark.background,
+    backgroundColor: Colors.dark.card,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 25,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.dark.border,
+    borderColor: Colors.dark.border + '60',
   },
   cancelButtonText: {
     fontSize: 16,
@@ -532,8 +606,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.dark.primary,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 25,
     alignItems: 'center',
+    elevation: 2,
+    shadowColor: Colors.dark.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   createModalButtonText: {
     fontSize: 16,

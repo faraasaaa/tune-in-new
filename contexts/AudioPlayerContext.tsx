@@ -157,7 +157,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         position = duration;
       }
       
-      await playbackInstance.pauseAsync();
+      await playbackInstance.setPositionAsync(position);
     } catch (error) {
       console.error('Error seeking:', error);
       setError('Failed to seek');

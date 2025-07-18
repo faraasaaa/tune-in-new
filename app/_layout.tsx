@@ -142,6 +142,8 @@ function TabsLayout() {
         <Tabs.Screen
           name="playlist-detail"
           options={{
+            title: "Playlist Details",
+            headerShown: false,
             href: null,
           }}
         />

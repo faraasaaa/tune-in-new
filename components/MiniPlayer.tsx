@@ -52,6 +52,15 @@ export default function MiniPlayer() {
     return null;
   }
 
+  // Don't show MiniPlayer on playlist-detail page when playing from that playlist
+  if (
+    typeof currentRoute === "string" &&
+    currentRoute === "/playlist-detail" &&
+    playlistSource === "playlist-detail"
+  ) {
+    return null;
+  }
+
   // If currentRoute is not a string (e.g., null or undefined during init),
   // the above condition will be false, and the MiniPlayer will render (if currentSong exists).
   // This might be acceptable if the route quickly resolves.

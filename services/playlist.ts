@@ -91,6 +91,8 @@ export const addSongToPlaylist = async (playlistId: string, song: DownloadedSong
       }
       
       await savePlaylist(playlist);
+    } else {
+      throw new Error('Song already exists in playlist');
     }
   } catch (error) {
     console.error('Error adding song to playlist:', error);
