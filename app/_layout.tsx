@@ -16,7 +16,8 @@ import Colors from "../constants/Colors";
 import {
     AudioPlayerProvider,
     useAudioPlayer,
-} from "../contexts/AudioPlayerContext";
+} from "../contexts/AudioPlayerContext"
+import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
@@ -166,6 +167,7 @@ function TabsLayout() {
 }
 
 export default function RootLayout() {
+  useFrameworkReady();
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoadingUserId, setIsLoadingUserId] = useState(true);
   const [showUsernameModal, setShowUsernameModal] = useState(false);
