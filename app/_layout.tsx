@@ -72,7 +72,7 @@ function TabsLayout() {
             right: 0,
           },
           tabBarActiveTintColor: Colors.dark.primary,
-          tabBarInactiveTintColor: Colors.dark.subText,
+          tabBarInactiveTintColor: Colors.dark.textDim,
           tabBarLabelStyle: {
             fontSize: 13,
             fontWeight: "600",

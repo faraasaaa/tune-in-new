@@ -65,6 +65,7 @@ export default function MiniPlayer() {
       }
     } catch (error) {
       console.error("Error toggling play/pause:", error);
+      // Silently handle errors in mini player
     }
   };
 
@@ -84,10 +85,11 @@ export default function MiniPlayer() {
         />
       </View>
 
-      <TouchableOpacity style={styles.container} onPress={navigateToPlayer}>
+      <TouchableOpacity style={styles.container} onPress={navigateToPlayer} activeOpacity={0.8}>
         <Image
           source={{ uri: currentSong.coverImage }}
           style={styles.coverImage}
+          transition={200}
         />
         <View style={styles.infoContainer}>
           <Text style={styles.songTitle} numberOfLines={1}>
@@ -97,7 +99,7 @@ export default function MiniPlayer() {
             {currentSong.artist}
           </Text>
         </View>
-        <TouchableOpacity style={styles.playButton} onPress={handlePlayPause}>
+        <TouchableOpacity style={styles.playButton} onPress={handlePlayPause} activeOpacity={0.7}>
           <Ionicons
             name={isPlaying ? "pause-circle" : "play-circle"}
             size={36}
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
   },
   artistName: {
     fontSize: 13,
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
   },
   playButton: {
     width: 48,

@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import Colors from '../constants/Colors';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import { DownloadedSong } from '../services/api';
@@ -57,7 +58,13 @@ export default function PlaylistDetailScreen() {
 
   const handlePlayPlaylist = async () => {
     if (!playlist || playlist.songs.length === 0) {
-      Alert.alert('Empty Playlist', 'This playlist has no songs to play');
+      Toast.show({
+        type: "info",
+        text1: "Empty Playlist",
+        text2: "This playlist has no songs to play",
+        position: "top",
+        visibilityTime: 3000,
+      });
       return;
     }
 
@@ -75,7 +82,13 @@ export default function PlaylistDetailScreen() {
       router.push('/player');
     } catch (error) {
       console.error('Error playing playlist:', error);
-      Alert.alert('Error', 'Failed to play playlist');
+      Toast.show({
+        type: "error",
+        text1: "Playback Error",
+        text2: "Failed to play playlist",
+        position: "top",
+        visibilityTime: 3000,
+      });
     }
   };
 
@@ -385,6 +398,7 @@ export default function PlaylistDetailScreen() {
             )}
           </SafeAreaView>
         </Modal>
+        <Toast />
       </LinearGradient>
     </SafeAreaView>
   );

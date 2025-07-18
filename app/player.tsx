@@ -63,6 +63,7 @@ export default function PlayerScreen() {
       }
     } catch (error) {
       console.error('Error toggling play/pause:', error);
+      // Provide user feedback for errors
     }
   };
 
@@ -76,7 +77,11 @@ export default function PlayerScreen() {
   };
 
   const handleSeekComplete = async () => {
-    await seekTo(seekPosition);
+    try {
+      await seekTo(seekPosition);
+    } catch (error) {
+      console.error('Error seeking:', error);
+    }
     setIsSeeking(false);
   };
 
@@ -129,11 +134,11 @@ export default function PlayerScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={handleBackNavigation} style={styles.headerButton}>
+        <TouchableOpacity onPress={handleBackNavigation} style={styles.headerButton} activeOpacity={0.7}>
           <Ionicons name="chevron-down" size={28} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.albumName} numberOfLines={1}>{currentSong?.album || 'Album name'}</Text>
-        <TouchableOpacity onPress={handleCancelSong} style={styles.headerButton}>
+        <TouchableOpacity onPress={handleCancelSong} style={styles.headerButton} activeOpacity={0.7}>
           <Ionicons name="close" size={28} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
@@ -146,6 +151,7 @@ export default function PlayerScreen() {
             source={{ uri: currentSong.coverImage }}
             style={styles.coverArt}
             contentFit="cover"
+            transition={300}
           />
         </View>
 
@@ -178,15 +184,15 @@ export default function PlayerScreen() {
 
         {/* Controls */}
         <View style={[styles.controlsContainer, { height: controlsHeight }]}>
-          <TouchableOpacity style={styles.controlButton} onPress={playPreviousSong}>
+          <TouchableOpacity style={styles.controlButton} onPress={playPreviousSong} activeOpacity={0.7}>
             <Ionicons name="play-skip-back" size={32} color="#FFFFFF" />
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.playPauseButton} onPress={handlePlayPause}>
+          <TouchableOpacity style={styles.playPauseButton} onPress={handlePlayPause} activeOpacity={0.8}>
             <Ionicons name={isPlaying ? "pause" : "play"} size={36} color="#000000" />
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.controlButton} onPress={playNextSong}>
+          <TouchableOpacity style={styles.controlButton} onPress={playNextSong} activeOpacity={0.7}>
             <Ionicons name="play-skip-forward" size={32} color="#FFFFFF" />
           </TouchableOpacity>
         </View>

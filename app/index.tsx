@@ -85,7 +85,13 @@ export default function SearchScreen() {
       }
     } catch (error) {
       console.error("Search error:", error);
-      Alert.alert("Error", "Failed to search songs");
+      Toast.show({
+        type: "error",
+        text1: "Search Failed",
+        text2: "Please check your internet connection and try again",
+        position: "top",
+        visibilityTime: 4000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +155,7 @@ export default function SearchScreen() {
     );
 
     return (
-      <Animated.View style={styles.trackItemContainer}>
+      <View style={styles.trackItemContainer}>
         <TouchableOpacity
           style={[
             styles.trackItem,
@@ -160,11 +166,13 @@ export default function SearchScreen() {
               ? handlePlayDownloadedSong(downloadedVersion)
               : handleDownload(item)
           }
+          activeOpacity={0.8}
         >
           <View style={styles.coverContainer}>
             <Image
               source={{ uri: item.cover_image }}
               style={styles.coverImage}
+              transition={200}
             />
             {downloadedVersion && (
               <LinearGradient
@@ -215,6 +223,7 @@ export default function SearchScreen() {
               <TouchableOpacity
                 style={styles.playButton}
                 onPress={() => handlePlayDownloadedSong(downloadedVersion)}
+                activeOpacity={0.7}
               >
                 <Ionicons
                   name="play"
@@ -226,6 +235,7 @@ export default function SearchScreen() {
               <TouchableOpacity
                 style={styles.downloadButton}
                 onPress={() => handleDownload(item)}
+                activeOpacity={0.7}
               >
                 <Ionicons
                   name="download-outline"
@@ -236,7 +246,7 @@ export default function SearchScreen() {
             )}
           </View>
         </TouchableOpacity>
-      </Animated.View>
+      </View>
     );
   };
 
@@ -547,6 +557,7 @@ const styles = StyleSheet.create({
   downloadedTrackItem: {
     borderColor: Colors.dark.primary + "40",
     backgroundColor: Colors.dark.card + "F0",
+    transform: [{ scale: 1.02 }],
   },
   coverContainer: {
     position: "relative",
@@ -581,10 +592,11 @@ const styles = StyleSheet.create({
   },
   downloadedTrackName: {
     color: Colors.dark.primary,
+    fontWeight: "700",
   },
   artistName: {
     fontSize: 14,
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     marginBottom: 2,
   },
   downloadedArtistName: {
@@ -592,7 +604,7 @@ const styles = StyleSheet.create({
   },
   albumName: {
     fontSize: 12,
-    color: Colors.dark.subText,
+    color: Colors.dark.muted,
     marginBottom: 6,
   },
   downloadedBadge: {
@@ -642,7 +654,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     fontWeight: "500",
   },
   emptyContainer: {
@@ -672,7 +684,7 @@ const styles = StyleSheet.create({
   },
   emptySubText: {
     fontSize: 14,
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     textAlign: "center",
     lineHeight: 20,
   },

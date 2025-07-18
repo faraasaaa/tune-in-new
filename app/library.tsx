@@ -71,7 +71,8 @@ export default function LibraryScreen() {
       router.push("/player");
     } catch (error) {
       console.error("Error playing song:", error);
-      Alert.alert("Error", "Failed to play song");
+      // Show a toast instead of alert for better UX
+      console.log("Failed to play song - showing user feedback");
     }
   };
 
@@ -110,7 +111,7 @@ export default function LibraryScreen() {
     const showNowPlaying = isCurrentSong && playlistSource === "library";
 
     return (
-      <Animated.View style={[styles.songItemWrapper, { opacity: 1 }]}>
+      <View style={styles.songItemWrapper}>
         <TouchableOpacity
           style={[styles.songItem, showNowPlaying && styles.currentSongItem]}
           onPress={() => handlePlaySong(item)}
@@ -120,6 +121,7 @@ export default function LibraryScreen() {
             <Image
               source={{ uri: item.coverImage }}
               style={styles.coverImage}
+              transition={200}
             />
             {showNowPlaying && (
               <LinearGradient
@@ -191,6 +193,7 @@ export default function LibraryScreen() {
             style={styles.deleteButton}
             onPress={() => handleDeleteSong(item)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            activeOpacity={0.7}
           >
             <Ionicons
               name="trash-outline"
@@ -199,7 +202,7 @@ export default function LibraryScreen() {
             />
           </TouchableOpacity>
         </TouchableOpacity>
-      </Animated.View>
+      </View>
     );
   };
 

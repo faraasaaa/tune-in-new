@@ -102,6 +102,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       // Unload previous song if exists
       if (playbackInstance) {
         await playbackInstance.unloadAsync();
+        setPlaybackInstance(null);
       }
 
       // Load and play new song
@@ -118,32 +119,49 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       console.error('Error playing song:', error);
       setError('Failed to play song');
       setIsLoading(false);
+      setCurrentSong(null);
+      setIsPlaying(false);
     }
   };
 
   const pauseSong = async () => {
-    if (playbackInstance) {
-      await playbackInstance.pauseAsync();
+    try {
+      if (playbackInstance) {
+        await playbackInstance.pauseAsync();
+      }
+    } catch (error) {
+      console.error('Error pausing song:', error);
+      setError('Failed to pause song');
     }
   };
 
   const resumeSong = async () => {
-    if (playbackInstance) {
-      await playbackInstance.playAsync();
+    try {
+      if (playbackInstance) {
+        await playbackInstance.playAsync();
+      }
+    } catch (error) {
+      console.error('Error resuming song:', error);
+      setError('Failed to resume song');
     }
   };
 
   const seekTo = async (position: number) => {
     if (!playbackInstance) return;
     
-    // Validate position is within bounds
-    if (position < 0) {
-      position = 0;
-    } else if (position > duration) {
-      position = duration;
+    try {
+      // Validate position is within bounds
+      if (position < 0) {
+        position = 0;
+      } else if (position > duration) {
+        position = duration;
+      }
+      
+      await playbackInstance.pauseAsync();
+    } catch (error) {
+      console.error('Error seeking:', error);
+      setError('Failed to seek');
     }
-    
-    await playbackInstance.setPositionAsync(position);
   };
 
   const getCurrentSongIndex = () => {
@@ -152,49 +170,69 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   const playNextSong = async () => {
-    if (playlist.length === 0) return;
-    
-    const currentIndex = getCurrentSongIndex();
-    if (currentIndex === -1) return;
-    
-    const nextIndex = (currentIndex + 1) % playlist.length;
-    await playSong(playlist[nextIndex]);
+    try {
+      if (playlist.length === 0) return;
+      
+      const currentIndex = getCurrentSongIndex();
+      if (currentIndex === -1) return;
+      
+      const nextIndex = (currentIndex + 1) % playlist.length;
+      await playSong(playlist[nextIndex]);
+    } catch (error) {
+      console.error('Error playing next song:', error);
+      setError('Failed to play next song');
+    }
   };
 
   const playPreviousSong = async () => {
-    if (playlist.length === 0) return;
-    
-    const currentIndex = getCurrentSongIndex();
-    if (currentIndex === -1) return;
-    
-    const previousIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-    await playSong(playlist[previousIndex]);
+    try {
+      if (playlist.length === 0) return;
+      
+      const currentIndex = getCurrentSongIndex();
+      if (currentIndex === -1) return;
+      
+      const previousIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+      await playSong(playlist[previousIndex]);
+    } catch (error) {
+      console.error('Error playing previous song:', error);
+      setError('Failed to play previous song');
+    }
   };
 
   const stopSong = async () => {
-    if (playbackInstance) {
-      await playbackInstance.stopAsync();
-      await playbackInstance.unloadAsync();
-      setPlaybackInstance(null);
+    try {
+      if (playbackInstance) {
+        await playbackInstance.stopAsync();
+        await playbackInstance.unloadAsync();
+        setPlaybackInstance(null);
+      }
+      setCurrentSong(null);
+      setIsPlaying(false);
+      setPosition(0);
+      setDuration(0);
+    } catch (error) {
+      console.error('Error stopping song:', error);
+      setError('Failed to stop song');
     }
-    setCurrentSong(null);
-    setIsPlaying(false);
-    setPosition(0);
-    setDuration(0);
   };
 
   const stopPlayback = async () => {
     // Stop the current song playback and clear the current song
     // but keep the playlist intact for future use
-    if (playbackInstance) {
-      await playbackInstance.stopAsync();
-      await playbackInstance.unloadAsync();
-      setPlaybackInstance(null);
+    try {
+      if (playbackInstance) {
+        await playbackInstance.stopAsync();
+        await playbackInstance.unloadAsync();
+        setPlaybackInstance(null);
+      }
+      setCurrentSong(null);
+      setIsPlaying(false);
+      setPosition(0);
+      setDuration(0);
+    } catch (error) {
+      console.error('Error stopping playback:', error);
+      setError('Failed to stop playback');
     }
-    setCurrentSong(null);
-    setIsPlaying(false);
-    setPosition(0);
-    setDuration(0);
   };
 
   // Simple playlist setter

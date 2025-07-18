@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   loadingText: {
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     marginTop: 10,
     textAlign: 'center',
   },
@@ -339,12 +339,12 @@ const styles = StyleSheet.create({
     marginBottom: 15, 
   },
   errorText: {
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     marginTop: 10,
     textAlign: 'center',
   },
   messageText: {
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     textAlign: 'left', 
     width: '100%', 
   },

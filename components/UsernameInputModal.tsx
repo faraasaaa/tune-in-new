@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   connectionCheckText: {
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     fontSize: 16,
     marginLeft: 10,
   },
@@ -401,13 +401,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputDisabled: {
-    backgroundColor: Colors.dark.subText + '20',
-    borderColor: Colors.dark.subText + '40',
-    color: Colors.dark.subText,
+    backgroundColor: Colors.dark.textDim + '20',
+    borderColor: Colors.dark.textDim + '40',
+    color: Colors.dark.textDim,
   },
   helpText: {
     fontSize: 12,
-    color: Colors.dark.subText,
+    color: Colors.dark.textDim,
     textAlign: 'center',
     marginBottom: 15,
     fontStyle: 'italic',

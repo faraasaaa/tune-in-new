@@ -5,6 +5,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { Alert, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import Colors from '../constants/Colors';
 import { useAudioPlayer } from '../contexts/AudioPlayerContext';
 import { DownloadedSong } from '../services/api';
@@ -85,7 +86,13 @@ export default function PlaylistScreen() {
 
   const handlePlayPlaylist = async (playlist: Playlist) => {
     if (playlist.songs.length === 0) {
-      Alert.alert('Empty Playlist', 'This playlist has no songs to play');
+      Toast.show({
+        type: "info",
+        text1: "Empty Playlist",
+        text2: "This playlist has no songs to play",
+        position: "top",
+        visibilityTime: 3000,
+      });
       return;
     }
 
@@ -103,7 +110,13 @@ export default function PlaylistScreen() {
       router.push('/player');
     } catch (error) {
       console.error('Error playing playlist:', error);
-      Alert.alert('Error', 'Failed to play playlist');
+      Toast.show({
+        type: "error",
+        text1: "Playback Error",
+        text2: "Failed to play playlist",
+        position: "top",
+        visibilityTime: 3000,
+      });
     }
   };
 
@@ -245,6 +258,8 @@ export default function PlaylistScreen() {
                 onChangeText={setNewPlaylistName}
                 autoFocus
                 maxLength={50}
+                returnKeyType="done"
+                onSubmitEditing={handleCreatePlaylist}
               />
               <View style={styles.modalButtons}>
                 <TouchableOpacity 
@@ -253,12 +268,14 @@ export default function PlaylistScreen() {
                     setShowCreateModal(false);
                     setNewPlaylistName('');
                   }}
+                  activeOpacity={0.7}
                 >
                   <Text style={styles.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={styles.createModalButton}
                   onPress={handleCreatePlaylist}
+                  activeOpacity={0.7}
                 >
                   <Text style={styles.createModalButtonText}>Create</Text>
                 </TouchableOpacity>
@@ -266,6 +283,7 @@ export default function PlaylistScreen() {
             </View>
           </View>
         </Modal>
+        <Toast />
       </LinearGradient>
     </SafeAreaView>
   );
