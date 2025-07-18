@@ -346,74 +346,6 @@ export default function PlaylistDetailScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Playlist Info */}
-        <View style={styles.playlistHeader}>
-          <View style={styles.playlistCoverContainer}>
-            {playlist.coverImage ? (
-              <Image source={{ uri: playlist.coverImage }} style={styles.playlistCover} />
-            ) : (
-              <LinearGradient
-                colors={[Colors.dark.primary + '40', Colors.dark.primary + '20']}
-                style={styles.defaultPlaylistCover}
-              >
-                <Ionicons name="musical-notes" size={48} color={Colors.dark.primary} />
-              </LinearGradient>
-            )}
-            
-            {/* Play button overlay on cover */}
-            {playlist.songs.length > 0 && (
-              <TouchableOpacity 
-                style={styles.coverPlayButton}
-                onPress={handlePlayPlaylist}
-                activeOpacity={0.8}
-              >
-                <View style={styles.playButtonCircle}>
-                  <Ionicons name="play" size={32} color={Colors.dark.background} />
-                </View>
-              </TouchableOpacity>
-            )}
-          </View>
-          
-          <View style={styles.playlistMeta}>
-            <Text style={styles.playlistName}>{playlist.name}</Text>
-            <Text style={styles.playlistStats}>
-              {playlist.songs.length} song{playlist.songs.length !== 1 ? 's' : ''}
-            </Text>
-            
-            <View style={styles.playlistActions}>
-              {playlist.songs.length > 0 && (
-                <>
-                  <TouchableOpacity 
-                    style={styles.playAllButton}
-                    onPress={handlePlayPlaylist}
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons name="play" size={20} color={Colors.dark.background} />
-                    <Text style={styles.playAllText}>Play All</Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={styles.shuffleButton}
-                    onPress={handleShufflePlay}
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons name="shuffle" size={20} color={Colors.dark.text} />
-                    <Text style={styles.shuffleText}>Shuffle</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-              
-              <TouchableOpacity 
-                style={styles.addSongsButton}
-                onPress={() => setShowAddSongsModal(true)}
-                activeOpacity={0.8}
-              >
-                <Ionicons name="add" size={20} color={Colors.dark.text} />
-                <Text style={styles.addSongsText}>Add Songs</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
 
         {/* Songs List */}
         {playlist.songs.length > 0 ? (
@@ -422,6 +354,64 @@ export default function PlaylistDetailScreen() {
             renderItem={renderSongItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContent}
+            ListHeaderComponent={() => (
+              <View style={styles.playlistHeader}>
+                <View style={styles.compactPlaylistInfo}>
+                  <View style={styles.playlistCoverContainer}>
+                    {playlist.coverImage ? (
+                      <Image source={{ uri: playlist.coverImage }} style={styles.playlistCover} />
+                    ) : (
+                      <LinearGradient
+                        colors={[Colors.dark.primary + '40', Colors.dark.primary + '20']}
+                        style={styles.defaultPlaylistCover}
+                      >
+                        <Ionicons name="musical-notes" size={32} color={Colors.dark.primary} />
+                      </LinearGradient>
+                    )}
+                  </View>
+                  
+                  <View style={styles.playlistMeta}>
+                    <Text style={styles.playlistName} numberOfLines={1}>{playlist.name}</Text>
+                    <Text style={styles.playlistStats}>
+                      {playlist.songs.length} song{playlist.songs.length !== 1 ? 's' : ''}
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.playlistActions}>
+                  {playlist.songs.length > 0 && (
+                    <>
+                      <TouchableOpacity 
+                        style={styles.playAllButton}
+                        onPress={handlePlayPlaylist}
+                        activeOpacity={0.8}
+                      >
+                        <Ionicons name="play" size={18} color={Colors.dark.background} />
+                        <Text style={styles.playAllText}>Play All</Text>
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity 
+                        style={styles.shuffleButton}
+                        onPress={handleShufflePlay}
+                        activeOpacity={0.8}
+                      >
+                        <Ionicons name="shuffle" size={18} color={Colors.dark.text} />
+                        <Text style={styles.shuffleText}>Shuffle</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                  
+                  <TouchableOpacity 
+                    style={styles.addSongsButton}
+                    onPress={() => setShowAddSongsModal(true)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons name="add" size={18} color={Colors.dark.text} />
+                    <Text style={styles.addSongsText}>Add Songs</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -512,7 +502,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.dark.border + '30',
   },
@@ -529,13 +519,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: Colors.dark.text,
-    marginBottom: 2,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 12,
     color: Colors.dark.textDim,
     fontWeight: '500',
   },
@@ -549,22 +538,25 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   playlistHeader: {
-    flexDirection: 'column',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 12,
+  },
+  compactPlaylistInfo: {
+    flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 16,
   },
   playlistCoverContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 16,
+    width: 80,
+    height: 80,
+    borderRadius: 12,
     overflow: 'hidden',
-    elevation: 5,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    position: 'relative',
-    marginBottom: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   playlistCover: {
     width: '100%',
@@ -576,68 +568,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  coverPlayButton: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  },
-  playButtonCircle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: Colors.dark.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 8,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
   playlistMeta: {
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 16,
+    flex: 1,
+    marginLeft: 16,
+    justifyContent: 'center',
   },
   playlistName: {
-    fontSize: 26,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '700',
     color: Colors.dark.text,
-    marginBottom: 8,
-    textAlign: 'center',
-    letterSpacing: -0.5,
+    marginBottom: 4,
   },
   playlistStats: {
-    fontSize: 16,
+    fontSize: 14,
     color: Colors.dark.subText,
-    marginBottom: 24,
-    textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: '500',
   },
   playlistActions: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
-    flexWrap: 'wrap',
-    width: '100%',
-    gap: 12,
+    gap: 8,
+    marginBottom: 8,
   },
   playAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 25,
-    minWidth: 120,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    flex: 1,
     shadowColor: Colors.dark.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -645,60 +606,63 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   playAllText: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '600',
     color: Colors.dark.background,
-    marginLeft: 8,
+    marginLeft: 6,
   },
   shuffleButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.accent + '20',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: Colors.dark.accent + '40',
-    minWidth: 120,
+    flex: 1,
   },
   shuffleText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: Colors.dark.text,
-    marginLeft: 8,
+    marginLeft: 6,
   },
   addSongsButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.dark.card,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: Colors.dark.border + '60',
-    minWidth: 120,
+    flex: 1,
   },
   addSongsText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: Colors.dark.text,
-    marginLeft: 8,
+    marginLeft: 6,
   },
   listContent: {
-    paddingHorizontal: 20,
     paddingBottom: 100,
   },
   separator: {
-    height: 8,
+    height: 1,
+    backgroundColor: Colors.dark.border + '20',
+    marginHorizontal: 20,
+    marginVertical: 6,
   },
   songItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.dark.card,
     borderRadius: 12,
-    padding: 12,
+    padding: 16,
+    marginHorizontal: 20,
     borderWidth: 1,
     borderColor: Colors.dark.border + '40',
   },
