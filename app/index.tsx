@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter, useNavigation } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -43,7 +43,7 @@ export default function SearchScreen() {
   const [downloading, setDownloading] = useState<string | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [downloadedSongs, setDownloadedSongs] = useState<DownloadedSong[]>([]);
-  const { playSong, setPlaylist } = useAudioPlayer();
+  const { playSong, setPlaylist, setPlaylistSource } = useAudioPlayer();
   const searchInputRef = useRef<TextInput>(null);
   const router = useRouter();
 
@@ -73,9 +73,10 @@ export default function SearchScreen() {
     setIsLoading(true);
     setSearchResults([]); // Clear previous results immediately
     try {
+      // Refresh downloaded songs list before searching
+      await loadDownloadedSongs();
+      
       const results = await searchSongs(searchTerm);
-      // Check against downloaded songs before setting search results
-      await loadDownloadedSongs(); // Refresh downloaded songs list
 
       setSearchResults(results);
       if (results.length > 0) {
@@ -114,8 +115,8 @@ export default function SearchScreen() {
       const downloadedSong = await downloadSong(track);
       if (downloadedSong) {
         await saveSong(downloadedSong);
-        // Refresh downloaded songs list to show play button immediately
-        await loadDownloadedSongs();
+        // Immediately update the local state to reflect the download
+        setDownloadedSongs(prev => [...prev, downloadedSong]);
         Toast.show({
           type: "success",
           text1: "Success",
@@ -139,6 +140,9 @@ export default function SearchScreen() {
   };
 
   const handlePlayDownloadedSong = async (songToPlay: DownloadedSong) => {
+    // Set the playlist source and create a single-song playlist
+    setPlaylistSource("search");
+    setPlaylist([songToPlay]);
     await playSong(songToPlay);
     router.push("/player");
   };
@@ -148,12 +152,16 @@ export default function SearchScreen() {
     const isDownloading = downloading === item.uri;
 
     // Check if this search result item is already downloaded
-    const downloadedVersion = downloadedSongs.find(
-      (ds) =>
-        ds.title.toLowerCase() === item.name.toLowerCase() &&
-        ds.album.toLowerCase() === item.album.toLowerCase() &&
-        ds.artist.toLowerCase() === artistsText.toLowerCase()
-    );
+    const downloadedVersion = downloadedSongs.find((ds) => {
+      const titleMatch = ds.title.toLowerCase().trim() === item.name.toLowerCase().trim();
+      const albumMatch = ds.album.toLowerCase().trim() === item.album.toLowerCase().trim();
+      const artistMatch = ds.artist.toLowerCase().trim() === artistsText.toLowerCase().trim();
+      
+      // Also check if the track URI is contained in the downloaded song ID
+      const uriMatch = ds.id.includes(item.uri.split(':').pop() || '');
+      
+      return (titleMatch && albumMatch && artistMatch) || uriMatch;
+    });
 
     return (
       <View style={styles.trackItemContainer}>

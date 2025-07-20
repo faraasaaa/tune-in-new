@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { Image } from 'expo-image';
-import { useNavigation, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
     Platform,
@@ -31,7 +31,6 @@ export default function PlayerScreen() {
     playlistSource,
   } = useAudioPlayer();
   const router = useRouter();
-  const navigation = useNavigation();
   const [isSeeking, setIsSeeking] = useState(false);
   const [seekPosition, setSeekPosition] = useState(0);
   
@@ -89,13 +88,31 @@ export default function PlayerScreen() {
     if (stopPlayback) {
       await stopPlayback();
     }
-    // Always go back to the previous screen
-    router.back();
+    // Navigate back based on playlist source
+    if (playlistSource === 'library') {
+      router.replace('/library');
+    } else if (playlistSource === 'playlist' || playlistSource === 'playlist-detail') {
+      router.replace('/playlist');
+    } else if (playlistSource === 'search') {
+      router.replace('/');
+    } else {
+      // Default fallback
+      router.replace('/');
+    }
   };
 
   const handleBackNavigation = () => {
-    // Always go back to the previous screen
-    router.back();
+    // Navigate back based on playlist source
+    if (playlistSource === 'library') {
+      router.replace('/library');
+    } else if (playlistSource === 'playlist' || playlistSource === 'playlist-detail') {
+      router.replace('/playlist');
+    } else if (playlistSource === 'search') {
+      router.replace('/');
+    } else {
+      // Default fallback
+      router.replace('/');
+    }
   };
 
   if (!currentSong) {
