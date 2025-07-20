@@ -43,14 +43,7 @@ export default function MiniPlayer() {
     return null;
   }
 
-  // Don't show MiniPlayer on the library page when playing from a playlist
-  if (
-    typeof currentRoute === "string" &&
-    currentRoute === "/library" &&
-    (playlistSource === "playlist" || playlistSource === "playlist-detail")
-  ) {
-    return null;
-  }
+  // Allow MiniPlayer to show on library page regardless of playlist source
 
   // Don't show MiniPlayer on playlist-detail page when playing from that playlist
   if (

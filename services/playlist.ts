@@ -10,6 +10,43 @@ export interface Playlist {
   coverImage?: string; // Will use first song's cover or default
 }
 
+// Reorder songs in a playlist
+export const reorderSongsInPlaylist = async (playlistId: string, fromIndex: number, toIndex: number): Promise<void> => {
+  try {
+    const playlists = await getPlaylists();
+    const playlistIndex = playlists.findIndex(p => p.id === playlistId);
+    
+    if (playlistIndex === -1) {
+      throw new Error('Playlist not found');
+    }
+    
+    const playlist = playlists[playlistIndex];
+    
+    // Make sure indices are valid
+    if (fromIndex < 0 || fromIndex >= playlist.songs.length || 
+        toIndex < 0 || toIndex >= playlist.songs.length) {
+      throw new Error('Invalid song indices');
+    }
+    
+    // Reorder the songs array
+    const [movedSong] = playlist.songs.splice(fromIndex, 1);
+    playlist.songs.splice(toIndex, 0, movedSong);
+    
+    // Update the playlist metadata
+    playlist.updatedAt = new Date().toISOString();
+    
+    // If we moved the first song, update the cover image
+    if (fromIndex === 0 || toIndex === 0) {
+      playlist.coverImage = playlist.songs[0].coverImage;
+    }
+    
+    await savePlaylist(playlist);
+  } catch (error) {
+    console.error('Error reordering songs in playlist:', error);
+    throw error;
+  }
+};
+
 const PLAYLISTS_KEY = 'user_playlists';
 
 // Get all playlists

@@ -115,6 +115,8 @@ export default function SearchScreen() {
       const downloadedSong = await downloadSong(track);
       if (downloadedSong) {
         await saveSong(downloadedSong);
+        // Refresh downloaded songs list to show play button immediately
+        await loadDownloadedSongs();
         Toast.show({
           type: "success",
           text1: "Success",
