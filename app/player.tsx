@@ -89,28 +89,13 @@ export default function PlayerScreen() {
     if (stopPlayback) {
       await stopPlayback();
     }
-    // Navigate back to the correct page based on playlist source
-    if (playlistSource === 'playlist') {
-      router.push('/playlist');
-    } else if (playlistSource === 'playlist-detail') {
-      // If we came from a specific playlist detail page, go back to that page
-      router.back();
-    } else {
-      router.push('/library');
-    }
+    // Always go back to the previous screen
+    router.back();
   };
 
   const handleBackNavigation = () => {
-    // Navigate back to the correct page based on playlist source
-    if (playlistSource === 'playlist') {
-      router.push('/playlist');
-    } else if (playlistSource === 'playlist-detail') {
-      // If we came from a specific playlist detail page, go back to that page
-      // We need to use the back() function to return to the previous screen
-      router.back();
-    } else {
-      router.push('/library');
-    }
+    // Always go back to the previous screen
+    router.back();
   };
 
   if (!currentSong) {

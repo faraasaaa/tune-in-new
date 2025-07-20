@@ -75,8 +75,7 @@ export default function SearchScreen() {
     try {
       const results = await searchSongs(searchTerm);
       // Check against downloaded songs before setting search results
-      const songs = await getDownloadedSongs(); // Re-fetch or use state
-      setDownloadedSongs(songs);
+      await loadDownloadedSongs(); // Refresh downloaded songs list
 
       setSearchResults(results);
       if (results.length > 0) {
