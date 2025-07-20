@@ -5,19 +5,20 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
-    SafeAreaProvider,
-    useSafeAreaInsets,
+  SafeAreaProvider,
+  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import MiniPlayer from "../components/MiniPlayer";
 import NoticeModal, { NoticeData } from "../components/NoticeModal";
 import UsernameInputModal from "../components/UsernameInputModal";
 import Colors from "../constants/Colors";
 import {
-    AudioPlayerProvider,
-    useAudioPlayer,
-} from "../contexts/AudioPlayerContext"
-import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+  AudioPlayerProvider,
+  useAudioPlayer,
+} from "../contexts/AudioPlayerContext";
+import { useFrameworkReady } from "@/hooks/useFrameworkReady";
 
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
@@ -348,32 +349,34 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      {userId ? (
-        <AudioPlayerProvider>
-          <StatusBar
-            style="light"
-            backgroundColor={Colors.dark.background}
-            translucent={false}
-          />
-          <TabsLayout />
-          {noticeData && (
-            <NoticeModal
-              visible={showNoticeModal}
-              notice={noticeData}
-              onClose={handleCloseNotice}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        {userId ? (
+          <AudioPlayerProvider>
+            <StatusBar
+              style="light"
+              backgroundColor={Colors.dark.background}
+              translucent={false}
             />
-          )}
-        </AudioPlayerProvider>
-      ) : (
-        <UsernameInputModal
-          visible={showUsernameModal}
-          onClose={() => {
-            setShowUsernameModal(true);
-          }}
-          onUserIdSet={handleUserIdSet}
-        />
-      )}
-    </SafeAreaProvider>
+            <TabsLayout />
+            {noticeData && (
+              <NoticeModal
+                visible={showNoticeModal}
+                notice={noticeData}
+                onClose={handleCloseNotice}
+              />
+            )}
+          </AudioPlayerProvider>
+        ) : (
+          <UsernameInputModal
+            visible={showUsernameModal}
+            onClose={() => {
+              setShowUsernameModal(true);
+            }}
+            onUserIdSet={handleUserIdSet}
+          />
+        )}
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

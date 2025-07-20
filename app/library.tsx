@@ -63,7 +63,7 @@ export default function LibraryScreen() {
         router.push("/player");
         return;
       }
-      
+
       // Set source as library and create single-song playlist
       setPlaylistSource("library");
       setPlaylist([song]);
