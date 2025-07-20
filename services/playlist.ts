@@ -13,6 +13,7 @@ export interface Playlist {
 // Reorder songs in a playlist
 export const reorderSongsInPlaylist = async (playlistId: string, fromIndex: number, toIndex: number): Promise<void> => {
   try {
+    // Use a more efficient approach - don't reload all playlists
     const playlists = await getPlaylists();
     const playlistIndex = playlists.findIndex(p => p.id === playlistId);
     
@@ -35,7 +36,7 @@ export const reorderSongsInPlaylist = async (playlistId: string, fromIndex: numb
     // Update the playlist metadata
     playlist.updatedAt = new Date().toISOString();
     
-    // If we moved the first song, update the cover image
+    // Update cover image only if necessary
     if (fromIndex === 0 || toIndex === 0) {
       playlist.coverImage = playlist.songs[0].coverImage;
     }

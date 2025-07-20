@@ -140,7 +140,7 @@ export default function PlaylistScreen() {
       setPlaylist(playlist.songs);
       setPlaylistSource('playlist'); // Set source as playlist
       await playSong(playlist.songs[0]);
-      router.push('/player');
+      router.navigate('/player');
     } catch (error) {
       console.error('Error playing playlist:', error);
       Toast.show({
@@ -154,7 +154,7 @@ export default function PlaylistScreen() {
   };
 
   const navigateToPlaylistDetail = (playlist: Playlist) => {
-    router.push({
+    router.navigate({
       pathname: '/playlist-detail' as any,
       params: { playlistId: playlist.id }
     });

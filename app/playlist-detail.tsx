@@ -135,14 +135,14 @@ export default function PlaylistDetailScreen() {
         playlistSource === "playlist-detail"
       ) {
         // If the same song is already playing, just navigate to the player
-        router.push("/player");
+        router.navigate("/player");
         return;
       }
 
       setAudioPlaylist(playlist.songs);
       setPlaylistSource("playlist-detail"); // Set source as playlist-detail
       await playSong(playlist.songs[0]);
-      router.push("/player");
+      router.navigate("/player");
     } catch (error) {
       console.error("Error playing playlist:", error);
       Toast.show({
@@ -174,7 +174,7 @@ export default function PlaylistDetailScreen() {
       setAudioPlaylist(shuffledSongs);
       setPlaylistSource("playlist-detail");
       await playSong(shuffledSongs[0]);
-      router.push("/player");
+      router.navigate("/player");
     } catch (error) {
       console.error("Error shuffling playlist:", error);
       Toast.show({
@@ -194,14 +194,14 @@ export default function PlaylistDetailScreen() {
       // Check if the song is already playing
       if (currentSong?.id === song.id && isPlaying) {
         // If the same song is already playing, just navigate to the player
-        router.push("/player");
+        router.navigate("/player");
         return;
       }
 
       setAudioPlaylist(playlist.songs);
       setPlaylistSource("playlist-detail"); // Set source as playlist-detail
       await playSong(song);
-      router.push("/player");
+      router.navigate("/player");
     } catch (error) {
       console.error("Error playing song:", error);
       Alert.alert("Error", "Failed to play song");
@@ -270,7 +270,7 @@ export default function PlaylistDetailScreen() {
       >
         <TouchableOpacity
           style={[
-            styles.songItem,
+          onPress={() => router.back()}
             showNowPlaying && styles.currentSongItem,
             isActive && styles.draggingSongItem,
           ]}
@@ -477,7 +477,13 @@ export default function PlaylistDetailScreen() {
             showsVerticalScrollIndicator={false}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             activationDistance={10}
-            animationConfig={{ damping: 20, stiffness: 200 }}
+            animationConfig={{ 
+              damping: 25, 
+              stiffness: 300,
+              mass: 0.8,
+              restDisplacementThreshold: 0.01,
+              restSpeedThreshold: 0.01
+            }}
             dragHitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             ListHeaderComponent={
               <View>
@@ -548,32 +554,24 @@ export default function PlaylistDetailScreen() {
             }
             onDragEnd={({ from, to }) => {
               if (from !== to) {
-                // Create a copy of the current songs array
+                // Optimistically update the UI immediately for smooth experience
                 const newSongs = [...playlist.songs];
                 const [movedSong] = newSongs.splice(from, 1);
                 newSongs.splice(to, 0, movedSong);
+                
+                // Update local state immediately without any delays
+                setPlaylist(prev => ({
+                  ...prev,
+                  songs: newSongs,
+                }));
 
-                // Update the local state with animation disabled to prevent flicker
-                // We're wrapping this in requestAnimationFrame to ensure smooth transition
-                requestAnimationFrame(() => {
-                  setPlaylist({
-                    ...playlist,
-                    songs: newSongs,
-                  });
+                // Persist changes in background without blocking UI
+                reorderSongsInPlaylist(playlistId, from, to).catch((error) => {
+                  console.error("Error reordering songs:", error);
+                  // Revert to original order if there's an error
+                  loadPlaylistData();
+                  Alert.alert("Error", "Failed to reorder songs");
                 });
-
-                // Persist the changes to storage with a small delay
-                // This helps prevent UI jank during the animation
-                setTimeout(() => {
-                  reorderSongsInPlaylist(playlistId, from, to).catch(
-                    (error) => {
-                      console.error("Error reordering songs:", error);
-                      // Revert to original order if there's an error
-                      loadPlaylistData();
-                      Alert.alert("Error", "Failed to reorder songs");
-                    }
-                  );
-                }, 100);
               }
             }}
           />
